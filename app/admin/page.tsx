@@ -153,7 +153,7 @@ export default function AdminPage() {
     }
 
     setAlunos((alunosData as Aluno[]) || []);
-    setPontos((pontosData as Ponto[]) || []);
+    setPontos((pontosData as unknown as Ponto[]) || []);
     setCarregando(false);
   }
 
@@ -308,7 +308,7 @@ export default function AdminPage() {
       return;
     }
 
-    setHistorico((data as Ponto[]) || []);
+    setHistorico((data as unknown as Ponto[]) || []);
     setCarregando(false);
   }
 
