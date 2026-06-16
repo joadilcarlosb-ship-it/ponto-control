@@ -32,6 +32,7 @@ export default function Home() {
     }
 
     atualizarRelogio();
+
     const timer = setInterval(atualizarRelogio, 1000);
 
     return () => clearInterval(timer);
@@ -39,7 +40,7 @@ export default function Home() {
 
   function digitar(valor: string) {
     if (codigo.length < 6) {
-      setCodigo(codigo + valor);
+      setCodigo(codigo + valor.toLowerCase());
       setMensagem("");
     }
   }
@@ -52,7 +53,7 @@ export default function Home() {
   async function buscarAluno() {
     setMensagem("");
 
-    if (codigo.length < 1) {
+    if (!codigo.trim()) {
       setMensagem("Digite seu código.");
       return;
     }
@@ -122,8 +123,16 @@ export default function Home() {
 
   return (
     <main className="min-h-screen bg-zinc-950 text-white flex items-center justify-center p-4">
+      <a
+        href="/admin"
+        title="Login de admin"
+        className="fixed top-4 right-4 bg-zinc-800 hover:bg-zinc-700 text-white rounded-full w-11 h-11 flex items-center justify-center text-2xl font-bold shadow-lg z-50"
+      >
+        ⋯
+      </a>
+
       <div className="w-full max-w-sm bg-zinc-900 rounded-3xl p-6 shadow-lg">
-        <h1 className="text-2xl font-bold text-center mb-2">Projeto Ponto</h1>
+        <h1 className="text-3xl font-bold text-center mb-2">Ponto Control</h1>
 
         <div className="bg-zinc-800 rounded-2xl p-4 text-center mb-5">
           <p className="text-4xl font-bold">{horaTexto}</p>
@@ -141,23 +150,23 @@ export default function Home() {
             </div>
 
             <div className="grid grid-cols-3 gap-4 mb-4 place-items-center">
-              {letras.map((t) => (
+              {letras.map((tecla) => (
                 <button
-                  key={t}
-                  onClick={() => digitar(t)}
+                  key={tecla}
+                  onClick={() => digitar(tecla)}
                   className="w-20 h-20 rounded-full bg-zinc-700 hover:bg-zinc-600 text-2xl font-bold uppercase shadow"
                 >
-                  {t}
+                  {tecla}
                 </button>
               ))}
 
-              {numeros.map((t) => (
+              {numeros.map((tecla) => (
                 <button
-                  key={t}
-                  onClick={() => digitar(t)}
+                  key={tecla}
+                  onClick={() => digitar(tecla)}
                   className="w-20 h-20 rounded-full bg-zinc-800 hover:bg-zinc-700 text-2xl font-bold shadow"
                 >
-                  {t}
+                  {tecla}
                 </button>
               ))}
             </div>

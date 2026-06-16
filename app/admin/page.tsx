@@ -29,6 +29,10 @@ export default function AdminPage() {
   const [usuario, setUsuario] = useState("");
   const [senha, setSenha] = useState("");
 
+  const [novoUsuario, setNovoUsuario] = useState("");
+  const [novaSenha, setNovaSenha] = useState("");
+  const [confirmarSenha, setConfirmarSenha] = useState("");
+
   const [pontos, setPontos] = useState<Ponto[]>([]);
   const [historico, setHistorico] = useState<Ponto[]>([]);
   const [alunos, setAlunos] = useState<Aluno[]>([]);
@@ -47,7 +51,12 @@ export default function AdminPage() {
 
   const [menuAberto, setMenuAberto] = useState(false);
   const [tela, setTela] = useState<
-    "hoje" | "manual" | "cadastro" | "alunos" | "historico"
+    | "hoje"
+    | "manual"
+    | "cadastro"
+    | "alunos"
+    | "historico"
+    | "configuracoes"
   >("hoje");
 
   const [carregando, setCarregando] = useState(true);
@@ -345,6 +354,43 @@ export default function AdminPage() {
 
     sucesso("Aluno desativado.");
     carregarDados();
+  }
+
+  async function salvarConfiguracoes() {
+    if (!novoUsuario.trim()) {
+      aviso("Digite o novo usuário.");
+      return;
+    }
+
+    if (!novaSenha.trim()) {
+      aviso("Digite a nova senha.");
+      return;
+    }
+
+    if (novaSenha !== confirmarSenha) {
+      erro("As senhas não coincidem.");
+      return;
+    }
+
+    const { error } = await supabase
+      .from("admins")
+      .update({
+        usuario: novoUsuario.trim(),
+        senha: novaSenha.trim(),
+      })
+      .eq("usuario", usuario.trim());
+
+    if (error) {
+      erro("Erro ao atualizar login.");
+      return;
+    }
+
+    setUsuario(novoUsuario.trim());
+    setSenha(novaSenha.trim());
+    setNovoUsuario("");
+    setNovaSenha("");
+    setConfirmarSenha("");
+    sucesso("Login atualizado com sucesso!");
   }
 
   function formatarHora(data: string) {
@@ -658,6 +704,19 @@ export default function AdminPage() {
                 className="bg-zinc-800 rounded-xl p-3 text-left font-bold"
               >
                 👥 Ver alunos
+              </button>
+
+              <button
+                onClick={() => {
+                  setNovoUsuario(usuario);
+                  setNovaSenha("");
+                  setConfirmarSenha("");
+                  setTela("configuracoes");
+                  setMenuAberto(false);
+                }}
+                className="bg-zinc-800 rounded-xl p-3 text-left font-bold"
+              >
+                ⚙️ Configurações
               </button>
 
               <button
@@ -995,6 +1054,46 @@ export default function AdminPage() {
                 </div>
               ))}
             </div>
+          </section>
+        )}
+
+        {tela === "configuracoes" && (
+          <section className="bg-zinc-900 rounded-2xl p-4">
+            <h2 className="text-2xl font-bold mb-4">Configurações</h2>
+
+            <p className="text-zinc-400 text-sm mb-3">
+              Troque o usuário e a senha do administrador.
+            </p>
+
+            <input
+              value={novoUsuario}
+              onChange={(e) => setNovoUsuario(e.target.value)}
+              placeholder="Novo usuário"
+              className="w-full bg-zinc-800 rounded-xl p-3 mb-3 outline-none"
+            />
+
+            <input
+              type="password"
+              value={novaSenha}
+              onChange={(e) => setNovaSenha(e.target.value)}
+              placeholder="Nova senha"
+              className="w-full bg-zinc-800 rounded-xl p-3 mb-3 outline-none"
+            />
+
+            <input
+              type="password"
+              value={confirmarSenha}
+              onChange={(e) => setConfirmarSenha(e.target.value)}
+              placeholder="Confirmar nova senha"
+              className="w-full bg-zinc-800 rounded-xl p-3 mb-3 outline-none"
+            />
+
+            <button
+              onClick={salvarConfiguracoes}
+              className="w-full bg-green-600 rounded-xl py-3 font-bold"
+            >
+              Salvar alterações
+            </button>
           </section>
         )}
       </div>
